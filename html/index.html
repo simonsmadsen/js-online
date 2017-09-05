@@ -1,0 +1,31 @@
+{{{include 'html/partials/header.html'}}}
+
+
+<div class="my-row sub-menu">
+
+<span>New</span>
+<span class="blue">|</span>
+<span>Edit</span>
+<span class="blue">|</span>
+<span>Restart</span>
+<span class="blue">|</span>
+<span>Delete</span>
+</div>
+</div>
+
+<div id="card-container">
+  {{#each a}}
+  <div class="card-wrapper">
+    <div class="card">
+      <p>#1</p>
+      <p>js-web-framework.com</p>
+      <p>2017-06-02 10:11</p>
+      <p>https | 7070</p>
+      <span>Running</span>
+    </div>
+  </div>
+  {{/each}}
+
+
+
+{{{include 'html/partials/footer.html'}}}
