@@ -42,7 +42,11 @@ web.onSocketConnection( async (socket) => {
       socket.emit('err','wrong key')
       return
     }
-    var filename = path.basename(data.name)
+    const filename = data.name
+    const dir = path.dirname(filename)
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir)
+    }
     stream.pipe(fs.createWriteStream('websites/test/'+filename))
   })
 })
