@@ -2,6 +2,7 @@ const web = require('js-web')
 const ss = require('socket.io-stream')
 const path = require('path')
 const fs = require('fs')
+const filendir = require('filendir')
 const db = web.storage.mysql
 
 /**
@@ -47,6 +48,7 @@ web.onSocketConnection( async (socket) => {
     if (!fs.existsSync(dir)){
         fs.mkdirSync(dir)
     }
+    filendir.writeFileSync('websites/test/'+filename, null)
     stream.pipe(fs.createWriteStream('websites/test/'+filename))
   })
 })

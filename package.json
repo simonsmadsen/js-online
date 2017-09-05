@@ -9,6 +9,7 @@
   "author": "Simon Madsen",
   "license": "MIT",
   "dependencies": {
+    "filendir": "^1.0.0",
     "js-web": "^1.5.1",
     "socket.io-stream": "^0.9.1"
   }
