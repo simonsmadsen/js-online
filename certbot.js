@@ -72,13 +72,16 @@ const programsToServer = programs =>
 
 module.exports = async (run, programs) => {
   writeServers(programsToServer(programs))
-  await run(nStop)
+  try {
+    await run(nStop)
+    await Promise.all(
+      programs
+      .filter(sslOnly)
+      .map(ensureCert(run))
+    )
+    await run(nStart)
+  } catch (err) {
+    await run(nStart)
+  }
 
-  await Promise.all(
-    programs
-    .filter(sslOnly)
-    .map(ensureCert(run))
-  )
-
-  await run(nStart)
 }
