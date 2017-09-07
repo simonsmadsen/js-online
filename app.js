@@ -86,7 +86,7 @@ web.postRoute('/programs/insert', async (input) => {
     port: input.port,
     domain: input.domain,
     key: makeKey(),
-    ssl: input.ssl
+    ssl: true
   })
   await certbot(run,programs.select())
   return web.back()
@@ -105,6 +105,10 @@ const overrideENV = program => {
     fs.writeFileSync(
       commands.programENV(program),
       file.replace(/\nport=.*/,'\nport='+program.port)
+      file.replace(/\nhttps_privkey=.*/,'\nhttps_privkey=/etc/letsencrypt/live/'+program.domain+'/privkey.pem')
+      file.replace(/\nhttps_cert=.*/,'\nhttps_cert=/etc/letsencrypt/live/'+program.domain+'/privkey.pem')
+      file.replace(/\nhttps_fullchain=.*/,'\nhttps_fullchain=/etc/letsencrypt/live/'+program.domain+'/privkey.pem')
+      file.replace(/\nhttps=.*/,'\nhttps=true')
     )
   }
 }
