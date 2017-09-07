@@ -81,6 +81,7 @@ module.exports = async (run, programs) => {
     )
     await run(nStart)
   } catch (err) {
+    console.log(err)
     await run(nStart)
   }
 
