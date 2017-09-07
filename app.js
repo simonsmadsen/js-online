@@ -139,7 +139,7 @@ web.onSocketConnection( async (socket) => {
     }
     const program = programBykey(data.key)
     const filename = commands.programPath(program)+data.name
-
+    console.log(filename + ' received');
     filendir.writeFileSync(filename, null)
     stream.pipe(fs.createWriteStream(filename))
   })
