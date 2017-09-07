@@ -85,8 +85,17 @@ web.route('/delete/:id', async (input) => {
   if(!program) return {no:'program'}
 
   programs.delete({domain:input.id})
-  console.log(await run('certbot delete --cert-name '+program.domain))
-  console.log(await run('pm2 delete '+program.domain))
+  try {
+    console.log(await run('certbot delete --cert-name '+program.domain))
+  } catch (err) {
+    console.log(err)
+  }
+  try {
+    console.log(await run('pm2 delete '+program.domain))
+  } catch (err) {
+    console.log('cant delete pm2');
+  }
+
   await certbot(run,programs.select())
   return {}
 })
