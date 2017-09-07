@@ -80,11 +80,22 @@ web.htmlRoute('/', 'html/index.html', async (input) => {
   }
 }, injections)
 
+web.route('/delete/:id', async (input) => {
+  const program = programs.find({domain:input.id})
+  if(!program) return {no:'program'}
+
+  programs.delete({domain:input.id})
+  console.log(await run('certbot delete --cert-name '+program.domain))
+  console.log(await run('pm2 delete '+program.domain))
+  await certbot(run,programs.select())
+  return {}
+})
 
 web.postRoute('/programs/insert', async (input) => {
   programs.create({
     port: input.port,
     domain: input.domain,
+    mainfile: input.mainfile,
     key: makeKey(),
     ssl: true
   })
