@@ -81,7 +81,7 @@ web.htmlRoute('/', 'html/index.html', async (input) => {
 }, injections)
 
 
-web.postRoute('/programs/insert', (input) => {
+web.postRoute('/programs/insert', async (input) => {
   programs.create({
     port: input.port,
     domain: input.domain,
