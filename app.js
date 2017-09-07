@@ -54,7 +54,7 @@ const programLog = program => {
 }
 
 const isProgramRinningGetLine = (list,program) => {
-  return list.match(new RegExp(program.domain+'[ \│]+.*disabled'))
+  return list.match(new RegExp(' '+program.domain+'[ \│]+.*disabled'))
 }
 const isProgramRunningTest = (line) => {
   if(!line || line.length < 1){
