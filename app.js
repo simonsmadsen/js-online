@@ -60,6 +60,7 @@ const isProgramRunningTest = (line) => {
   if(!line || line.length < 1){
     return false
   }
+  console.log(line);
   return line[0].indexOf('online') > -1
 }
 
