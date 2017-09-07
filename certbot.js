@@ -58,9 +58,8 @@ const ensureCert = run => async program => {
   console.log(certs)
   const line = certlistMatch(program,certs)
   console.log(line)
-  const noCert = !line || line.length < 1
-  console.log(hasCert);
-  if(!noCert){
+  if(!line || line.length < 1){
+    console.log('new');
      const r = await run(newCert(program))
      console.log(r)
   }
