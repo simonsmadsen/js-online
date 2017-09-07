@@ -134,21 +134,26 @@ const overrideENV = program => {
   }
 }
 
-web.socket('done', async (data) => {
+web.socket('done', async (data, socket) => {
   const program = programBykey(data.key)
 
   try {
+    socket.emit('msg',commands.programInstall(program))
     await run(commands.programInstall(program))
     overrideENV(program)
+    socket.emit('msg','override .env')
 
+    socket.emit('msg',commands.programStart(program))
     try {
       await run(commands.programStart(program))
     } catch (err) {
       await run(commands.programRestart(program))
     }
-
+    socket.emit('msg','done')
   } catch (err) {
     console.log(err)
+    socket.emit('msg',err)
+    socket.emit('msg','done')
   }
 })
 
