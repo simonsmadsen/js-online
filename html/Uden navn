@@ -1,0 +1,8 @@
+users.create({name: 'Simon'})
+
+users.update(
+  {name: 'Peter'},
+  {name:'Simon'}
+)
+
+users.delete({name: 'Peter'})

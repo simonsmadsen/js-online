@@ -1,27 +1,33 @@
 {{{include 'html/partials/header.html'}}}
 
-
-<div class="my-row sub-menu">
-
-<span>New</span>
-<span class="blue">|</span>
-<span>Edit</span>
-<span class="blue">|</span>
-<span>Restart</span>
-<span class="blue">|</span>
-<span>Delete</span>
-</div>
+<div class="my-row" style="max-width: 200px; margin-left:20px">
+  <form action="/programs/insert" method="post">
+    <div class="form-group">
+      <label for="exampleInputDomain">Domain</label>
+      <input type="text" class="form-control" id="exampleInputDomain" name="domain" placeholder="">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputDomain">Port</label>
+      <input type="text" name="port" class="form-control" id="exampleInputDomain" placeholder="2020">
+    </div>
+    <div class="checkbox">
+      <label>
+        <input name="ssl" type="checkbox"> SSL
+      </label>
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
 </div>
 
 <div id="card-container">
-  {{#each a}}
-  <div class="card-wrapper">
+  {{#each programs}}
+  <div class="card-wrapper" data-key="{{key}}">
     <div class="card">
-      <p>#1</p>
-      <p>js-web-framework.com</p>
-      <p>2017-06-02 10:11</p>
-      <p>https | 7070</p>
-      <span>Running</span>
+      <p>#{{key}}</p>
+      <p><a href="{{domain}}:{{port}}">{{domain}}:{{port}}</a></p>
+      <p>{{port}}</p>
+      <p>{{protocol}}</p>
+      <span>{{online}}</span>
     </div>
   </div>
   {{/each}}

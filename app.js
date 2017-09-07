@@ -3,7 +3,29 @@ const ss = require('socket.io-stream')
 const path = require('path')
 const fs = require('fs')
 const filendir = require('filendir')
-const db = web.storage.mysql
+const db = web.storage.local
+const programs = db.table('programs')
+const commands = require('./program-utils.js')
+const certbot = require('./certbot.js')
+
+const makeKey = () => Math.random().toString(36).slice(2)
+const util = require('util')
+
+const exec = require('child_process').exec;
+const run = call => {
+  return new Promise( (resolve,reject) => {
+    console.log(call)
+    exec(call, (error, stdout, stderr) => {
+      if(stderr){
+        console.log(stderr)
+      }
+      if (error) {
+        reject(error)
+      }
+      resolve(stdout)
+    })
+  })
+}
 
 /**
  * Injections
@@ -17,39 +39,105 @@ const injections = [
   web.inject.script('script/main.js')
 ]
 
+const isProgramRunning = async (program) => {
+  const line = isProgramRinningGetLine(await run('pm2 list'),program)
+  return isProgramRunningTest(line)
+}
+
+const isProgrammingRunningLoaded = (lines, program) => {
+  const line = isProgramRinningGetLine(lines,program)
+  return isProgramRunningTest(line)
+}
+
+const programLog = program => {
+  return run('pm2 log '+program.domain)
+}
+
+const isProgramRinningGetLine = (list,program) => {
+  return list.match(new RegExp(program.domain+'[ \│]+.*disabled'))
+}
+const isProgramRunningTest = (line) => {
+  if(!line || line.length < 1){
+    return false
+  }
+  return line[0].indexOf('online') > -1
+}
+
+
 /**
  * Routes
 */
-web.htmlRoute('/', 'html/index.html', {
-  a: [1,2,3,4,5,6,7,8,9,10,11,12,13]
+web.htmlRoute('/', 'html/index.html', async (input) => {
+  const allPrograms = programs.select()
+  const allLines = await run('pm2 list')
+
+  return {
+    programs: allPrograms.map( program => {
+      program.protocol = program.ssl ? 'https' : 'http'
+      program.online = isProgrammingRunningLoaded(allLines,program) ? 'Running :)' : 'Dead :('
+      return program
+    })
+  }
 }, injections)
+
+
+web.postRoute('/programs/insert', (input) => {
+  programs.create({
+    port: input.port,
+    domain: input.domain,
+    key: makeKey(),
+    ssl: input.ssl
+  })
+  await certbot(run,programs.select())
+  return web.back()
+})
 
 web.notFound('html/not-found.html')
 
-const keys = [
-  'asladklmadsl12312askl'
-]
+const keys = () => programs.select().map(p => p.key)
 
-web.socket('done', data => {
-  const key = data.key
-  // npm install key program
-  // fix .env
-  // start with pm2
+const programBykey = key =>
+  programs.select().filter(p => p.key === key)[0]
+
+const overrideENV = program => {
+  if(fs.existsSync(commands.programENV(program))){
+    let file = fs.readFileSync(commands.programENV(program),'utf-8')
+    fs.writeFileSync(
+      commands.programENV(program),
+      file.replace(/\nport=.*/,'\nport='+program.port)
+    )
+  }
+}
+
+web.socket('done', async (data) => {
+  const program = programBykey(data.key)
+
+  try {
+    await run(commands.programInstall(program))
+    overrideENV(program)
+
+    try {
+      await run(commands.programStart(program))
+    } catch (err) {
+      await run(commands.programRestart(program))
+    }
+
+  } catch (err) {
+    console.log(err)
+  }
 })
 
 web.onSocketConnection( async (socket) => {
   ss(socket).on('file', (stream, data) => {
-    if(keys.indexOf(data.key) === -1){
+    if(keys().indexOf(data.key) === -1){
       socket.emit('err','wrong key')
       return
     }
-    const filename = data.name
-    const dir = path.dirname(filename)
-    if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir)
-    }
-    filendir.writeFileSync('websites/test/'+filename, null)
-    stream.pipe(fs.createWriteStream('websites/test/'+filename))
+    const program = programBykey(data.key)
+    const filename = commands.programPath(program)+data.name
+
+    filendir.writeFileSync(filename, null)
+    stream.pipe(fs.createWriteStream(filename))
   })
 })
 
