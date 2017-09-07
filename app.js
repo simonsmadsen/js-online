@@ -106,8 +106,8 @@ const overrideENV = program => {
       commands.programENV(program),
       file.replace(/\nport=.*/,'\nport='+program.port)
       .replace(/\nhttps_privkey=.*/,'\nhttps_privkey=/etc/letsencrypt/live/'+program.domain+'/privkey.pem')
-      .replace(/\nhttps_cert=.*/,'\nhttps_cert=/etc/letsencrypt/live/'+program.domain+'/privkey.pem')
-      .replace(/\nhttps_fullchain=.*/,'\nhttps_fullchain=/etc/letsencrypt/live/'+program.domain+'/privkey.pem')
+      .replace(/\nhttps_cert=.*/,'\nhttps_cert=/etc/letsencrypt/live/'+program.domain+'/cert.pem')
+      .replace(/\nhttps_fullchain=.*/,'\nhttps_fullchain=/etc/letsencrypt/live/'+program.domain+'/fullchain.pem')
       .replace(/\nhttps=.*/,'\nhttps=true')
     )
   }
@@ -132,7 +132,7 @@ web.socket('done', async (data) => {
 })
 
 web.onSocketConnection( async (socket) => {
-  ss(socket).on('', (stream, data) => {
+  ss(socket).on('file', (stream, data) => {
     if(keys().indexOf(data.key) === -1){
       socket.emit('err','wrong key')
       return
