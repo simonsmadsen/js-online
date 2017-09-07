@@ -60,7 +60,6 @@ const isProgramRunningTest = (line) => {
   if(!line || line.length < 1){
     return false
   }
-  console.log(line);
   return line[0].indexOf('online') > -1
 }
 
@@ -87,6 +86,7 @@ web.route('/delete/:id', async (input) => {
 
   programs.delete({domain:input.id})
   try {
+    console.log(await run('rm -R websites/'+program.domain) )
     console.log(await run('certbot delete --cert-name '+program.domain))
   } catch (err) {
     console.log(err)
