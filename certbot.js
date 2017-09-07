@@ -55,10 +55,14 @@ const sslOnly = program => program.ssl ? true : false
 
 const ensureCert = run => async program => {
   const certs = await run(certlist)
+  console.log(certs)
   const line = certlistMatch(program,certs)
+  console.log(line)
   const hasCert = !line || line.length < 1
+  console.log(hasCert);
   if(!hasCert){
-    await run(newCert(program))
+     const r = await run(newCert(program))
+     console.log(r)
   }
 
   return Promise.resolve()
