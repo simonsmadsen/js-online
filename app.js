@@ -184,7 +184,10 @@ const programBykey = key =>
 const overrideENV = program => {
   if(fs.existsSync(commands.programENV(program))){
     let file = fs.readFileSync(commands.programENV(program),'utf-8')
+    console.log(file)
     const systemSettings = getSettings()
+    console.log(systemSettings)
+    console.log(program)
     fs.writeFileSync(fixENV(
       {
         port: program.port,
@@ -210,6 +213,7 @@ web.socket('done', async (data, socket) => {
   const program = programBykey(data.key)
 
   try {
+    console.log(program);
     socket.emit('msg',commands.programInstall(program))
     await run(commands.programInstall(program))
     overrideENV(program)
