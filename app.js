@@ -171,7 +171,8 @@ const keys = () => programs.select().map(p => p.key)
 const programBykey = key =>
   programs.select().filter(p => p.key === key)[0]
 
-  const replaceReg = key => new RegExp('\n'+key+'=.*')
+  const macFix = key => key === 'mac' ? 'mac|mac' : key
+  const replaceReg = key => new RegExp('\n'+macFix(key)+'=.*')
   const fixENV = (corrections, file) =>
     Object.keys(corrections)
     .filter(key =>
@@ -187,7 +188,7 @@ const overrideENV = program => {
     const systemSettings = getSettings()
     fs.writeFileSync(commands.programENV(program),fixENV(
       {
-        'mac|mac': 'false',
+        mac: 'false',
         port: program.port,
         https_privkey: `/etc/letsencrypt/live/${program.domain}/privkey.pem`,
         https_cert: `/etc/letsencrypt/live/${program.domain}/cert.pem`,
