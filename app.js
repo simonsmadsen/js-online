@@ -214,11 +214,6 @@ const overrideENV = program => {
   if(fs.existsSync(commands.programENV(program))){
     let file = fs.readFileSync(commands.programENV(program),'utf-8')
     const systemSettings = getSettings()
-    console.log(1);
-    console.log(systemSettings)
-    console.log(2);
-    console.log(systemSettings.ensure_database)
-    console.log(3);
 
     fs.writeFileSync(commands.programENV(program),fixENV(
       {
@@ -229,7 +224,7 @@ const overrideENV = program => {
         https_fullchain: `/etc/letsencrypt/live/${program.domain}/fullchain.pem`,
         https: 'true',
         mysql_host: systemSettings.mysql_host,
-        mysql_database: systemSettings.ensure_database,
+        mysql_database: program.ensure_database,
         mysql_username: systemSettings.mysql_username,
         mysql_password: systemSettings.mysql_password,
         mysql_port: systemSettings.mysql_port,
