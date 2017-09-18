@@ -185,7 +185,7 @@ const overrideENV = program => {
   if(fs.existsSync(commands.programENV(program))){
     let file = fs.readFileSync(commands.programENV(program),'utf-8')
     const systemSettings = getSettings()
-    fs.writeFileSync(fixENV(
+    fs.writeFileSync(commands.programENV(program),fixENV(
       {
         port: program.port,
         https_privkey: `/etc/letsencrypt/live/${program.domain}/privkey.pem`,
@@ -202,7 +202,7 @@ const overrideENV = program => {
         twitter_consumer_key: program.twitter_consumer_key,
         twitter_consumer_secret: program.twitter_consumer_secret
       },file
-    ),commands.programENV(program))
+    ))
   }
 }
 
