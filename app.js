@@ -70,7 +70,22 @@ const isProgramRunningTest = (line) => {
 /**
  * Routes
 */
-web.htmlRoute('/', 'html/index.html', async (input) => {
+web.htmlRoute('/login','html/login.html', async () => {
+  return {}
+},injections)
+
+web.postRoute('/login', async (input,session) => {
+  if(input.password !== web.config.password){
+    return web.back()
+  }
+  session.set('auth','true')
+  return web.redirect('/')
+})
+
+web.htmlRoute('/', 'html/index.html', async (input, session) => {
+  if(!session.get('auth'))
+    return web.redirect('/login')
+
   const allPrograms = programs.select()
   const allLines = await run('pm2 list')
 
@@ -83,7 +98,9 @@ web.htmlRoute('/', 'html/index.html', async (input) => {
   }
 }, injections)
 
-web.postRoute('/settings/update', async (input) => {
+web.postRoute('/settings/update', async (input,session) => {
+  if(!session.get('auth'))
+    return web.redirect('/login')
 
   if(settings.find({id: 1})){
       settings.update(Object.assign(
@@ -98,16 +115,24 @@ web.postRoute('/settings/update', async (input) => {
   settings.insert()
 })
 
-web.htmlRoute('/new', 'html/new.html', async (input) => {
+web.htmlRoute('/new', 'html/new.html', async (input,session) => {
+  if(!session.get('auth'))
+    return web.redirect('/login')
   return {}
 })
 
-web.htmlRoute('/settings', 'html/settings.html', async (input) => {
+web.htmlRoute('/settings', 'html/settings.html', async (input,session) => {
+  if(!session.get('auth'))
+    return web.redirect('/login')
+
   return settings.find({id:1}) ||
     {mysql_port: 3306, mysql_host: 'localhost', mysql_username: 'root'}
 })
 
-web.route('/delete/:id', async (input) => {
+web.route('/delete/:id', async (input,session) => {
+  if(!session.get('auth'))
+    return web.redirect('/login')
+
   const program = programs.find({domain:input.id})
   if(!program) return {no:'program'}
 
@@ -137,7 +162,10 @@ const cleanDomain = domain =>
   .replace('://','')
   .replace('http',''))
 
-web.postRoute('/programs/insert', async (input) => {
+web.postRoute('/programs/insert', async (input,session) => {
+  if(!session.get('auth'))
+    return web.redirect('/login')
+
   programs.create({
     domain: cleanDomain(input.domain),
     port: input.port,

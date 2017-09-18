@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "filendir": "^1.0.0",
-    "js-web": "^1.6.9",
+    "js-web": "^1.7.0",
     "lowdb": "^1.0.0",
     "socket.io-stream": "^0.9.1"
   }
