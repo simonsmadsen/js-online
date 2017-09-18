@@ -133,8 +133,10 @@ web.route('/delete/:id', async (input,session) => {
   if(!session.get('auth'))
     return web.redirect('/login')
 
-  const program = programs.find({domain:input.id})
+  const program = programs.find({key:input.id})
   if(!program) return {no:'program'}
+  console.log(program)
+  return program
 
   programs.delete({domain:input.id})
   try {

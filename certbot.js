@@ -53,9 +53,7 @@ const programToServer = (servers, program) =>
 
 const sslOnly = program => program.ssl ? true : false
 
-const ensureCert = run => async program => {
-  const certs = await run(certlist)
-  console.log(certs)
+const ensureCert = (run,certs) => async program => {
   const line = certlistMatch(program,certs)
   console.log(line)
   if(!line || line.length < 1){
@@ -74,10 +72,11 @@ module.exports = async (run, programs) => {
   writeServers(programsToServer(programs))
   try {
     await run(nStop)
+    const certs = await run(certlist)
     await Promise.all(
       programs
       .filter(sslOnly)
-      .map(ensureCert(run))
+      .map(ensureCert(run,certs))
     )
     await run(nStart)
   } catch (err) {
