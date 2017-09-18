@@ -1,22 +1,20 @@
 {{{include 'html/partials/header.html'}}}
 
-<div class="my-row" style="max-width: 200px; margin-left:20px">
-  <form action="/programs/insert" method="post">
-    <div class="form-group">
-      <label for="exampleInputDomain">Domain (only domain -no http,https,/)</label>
-      <input type="text" class="form-control" id="exampleInputDomain" name="domain" placeholder="">
-    </div>
-    <div class="form-group">
-      <label for="exampleInputDomain">Main file</label>
-      <input value="app.js" name="mainfile" type="text" class="form-control" id="exampleInputDomain" name="domain" placeholder="">
-    </div>
-    <div class="form-group">
-      <label for="exampleInputDomain">Port</label>
-      <input type="text" name="port" class="form-control" id="exampleInputDomain" placeholder="2020">
-    </div>
-    <button type="submit" class="btn btn-default">Submit</button>
-</form>
-</div>
+<div class="my-row">
+
+  <div class="my-row sub-menu">
+
+  <span><a href="/new">New</a></span>
+  <!--
+  <span class="blue">|</span>
+  <span>Edit</span>
+  <span class="blue">|</span>
+  <span>Restart</span>
+  <span class="blue">|</span>
+  <span>Delete</span>
+  -->
+  </div>
+  </div>
 
 <div id="card-container">
   {{#each programs}}
@@ -30,6 +28,6 @@
   </div>
   {{/each}}
 
-
+</div>
 
 {{{include 'html/partials/footer.html'}}}

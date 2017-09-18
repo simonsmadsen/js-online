@@ -4,7 +4,10 @@ const path = require('path')
 const fs = require('fs')
 const filendir = require('filendir')
 const db = web.storage.local
+const mem = web.storage.ram
 const programs = db.table('programs')
+const settings = db.table('settings')
+const getSettings = _ => settings.find({id: 1})
 const commands = require('./program-utils.js')
 const certbot = require('./certbot.js')
 
@@ -26,7 +29,8 @@ const run = call => {
     })
   })
 }
-
+const ensureDatabase = (database, dbPassword) =>
+  run(`mysql -u root --password="${dbPassword}" -e "CREATE DATABASE IF NOT EXISTS ${database}"`)
 /**
  * Injections
 */
@@ -63,7 +67,6 @@ const isProgramRunningTest = (line) => {
   return line[0].indexOf('online') > -1
 }
 
-
 /**
  * Routes
 */
@@ -79,6 +82,30 @@ web.htmlRoute('/', 'html/index.html', async (input) => {
     })
   }
 }, injections)
+
+web.postRoute('/settings/update', async (input) => {
+
+  if(settings.find({id: 1})){
+      settings.update(Object.assign(
+        input,{id: 1}
+      ),{id: 1})
+  }else{
+      settings.create(Object.assign(
+        input,{id: 1}
+      ))
+  }
+  return web.back()
+  settings.insert()
+})
+
+web.htmlRoute('/new', 'html/new.html', async (input) => {
+  return {}
+})
+
+web.htmlRoute('/settings', 'html/settings.html', async (input) => {
+  return settings.find({id:1}) ||
+    {mysql_port: 3306, mysql_host: 'localhost', mysql_username: 'root'}
+})
 
 web.route('/delete/:id', async (input) => {
   const program = programs.find({domain:input.id})
@@ -101,16 +128,40 @@ web.route('/delete/:id', async (input) => {
   return {}
 })
 
+const removeLastSlash
+  = str => str[str.length -1] === '/' ? str.substring(0,str.length -1) : str
+
+const cleanDomain = domain =>
+  removeLastSlash(domain
+  .replace('https','')
+  .replace('://','')
+  .replace('http',''))
+
 web.postRoute('/programs/insert', async (input) => {
   programs.create({
+    domain: cleanDomain(input.domain),
     port: input.port,
-    domain: input.domain,
-    mainfile: input.mainfile,
+    file: input.file,
+    migration: input.migration,
+    ensure_database: input.ensure_database,
+    facebook_app_id: input.facebook_app_id,
+    google_client_id: input.google_client_id,
+    google_api_key: input.google_api_key,
+    twitter_consumer_key: input.twitter_consumer_key,
+    twitter_consumer_secret: input.twitter_consumer_secret,
     key: makeKey(),
     ssl: true
   })
+
+  if (input.ensure_database.length > 0) {
+    try {
+      await ensureDatabase(input.ensure_database,getSettings().mysql_password)
+    } catch (err) {
+      console.log(err)
+    }
+  }
   await certbot(run,programs.select())
-  return web.back()
+  return web.redirect('/')
 })
 
 web.notFound('html/not-found.html')
@@ -120,17 +171,38 @@ const keys = () => programs.select().map(p => p.key)
 const programBykey = key =>
   programs.select().filter(p => p.key === key)[0]
 
+  const replaceReg = key => new RegExp('\n'+key+'=.*')
+  const fixENV = (corrections, file) =>
+    Object.keys(corrections)
+    .filter(key =>
+      (corrections[key] || '').length > 0
+    )
+    .reduce( (file, correntionKey) =>
+      file.replace(replaceReg(correntionKey),'\n'+correntionKey+'='+corrections[correntionKey])
+    ,file)
+
 const overrideENV = program => {
   if(fs.existsSync(commands.programENV(program))){
     let file = fs.readFileSync(commands.programENV(program),'utf-8')
-    fs.writeFileSync(
-      commands.programENV(program),
-      file.replace(/\nport=.*/,'\nport='+program.port)
-      .replace(/\nhttps_privkey=.*/,'\nhttps_privkey=/etc/letsencrypt/live/'+program.domain+'/privkey.pem')
-      .replace(/\nhttps_cert=.*/,'\nhttps_cert=/etc/letsencrypt/live/'+program.domain+'/cert.pem')
-      .replace(/\nhttps_fullchain=.*/,'\nhttps_fullchain=/etc/letsencrypt/live/'+program.domain+'/fullchain.pem')
-      .replace(/\nhttps=.*/,'\nhttps=true')
-    )
+    const systemSettings = getSettings()
+    fs.writeFileSync(fixENV(
+      {
+        port: program.port,
+        https_privkey: `/etc/letsencrypt/live/${program.domain}/privkey.pem`,
+        https_cert: `/etc/letsencrypt/live/${program.domain}/cert.pem`,
+        https_fullchain: `/etc/letsencrypt/live/${program.domain}/fullchain.pem`,
+        https: 'true',
+        mysql_host: systemSettings.mysql_host,
+        mysql_username: systemSettings.mysql_username,
+        mysql_password: systemSettings.mysql_password,
+        mysql_port: systemSettings.mysql_port,
+        facebook_app_id: program.facebook_app_id,
+        google_client_id: program.google_client_id,
+        google_api_key: program.google_api_key,
+        twitter_consumer_key: program.twitter_consumer_key,
+        twitter_consumer_secret: program.twitter_consumer_secret
+      },commands.programENV(program)
+    ))
   }
 }
 
@@ -142,6 +214,10 @@ web.socket('done', async (data, socket) => {
     await run(commands.programInstall(program))
     overrideENV(program)
     socket.emit('msg','override .env')
+    if(program.migration.length > 0){
+      socket.emit('msg','running '+program.migration)
+      await run(commands.migrate(program))
+    }
 
     socket.emit('msg',commands.programStart(program))
     try {
@@ -170,6 +246,5 @@ web.onSocketConnection( async (socket) => {
     stream.pipe(fs.createWriteStream(filename))
   })
 })
-
 
 web.start()

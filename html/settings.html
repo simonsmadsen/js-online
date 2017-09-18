@@ -1,0 +1,52 @@
+{{{include 'html/partials/header.html'}}}
+
+<div class="my-row" style="margin-left:20px">
+  <div class="row">
+    <form action="/settings/update" method="post">
+      <div class="col-md-8 col-sm-8 form-col">
+        <div class="row">
+          <div class="col-md-6 col-sm-6">
+            <h3>Settings</h3>
+              <div class="form-group">
+                <label >Mysql host</label>
+                <input type="text" class="form-control"  value="{{mysql_host}}" name="mysql_host" placeholder="">
+              </div>
+              <div class="form-group">
+                <label >Mysql username</label>
+                <input type="text" class="form-control"  name="mysql_username" value="{{mysql_username}}" placeholder="">
+              </div>
+              <div class="form-group">
+                <label >Mysql password</label>
+                <input type="text" name="mysql_password" class="form-control"  placeholder="" value="{{mysql_password}}">
+              </div>
+              <div class="form-group">
+                <label >Mysql port</label>
+                <input type="text" value="{{mysql_port}}" name="mysql_port" class="form-control" >
+              </div>
+          </div>
+          <div class="col-md-6 col-sm-6">
+            <!--
+              <div class="form-group">
+                <label >Domain</label>
+                <input type="text" class="form-control"  name="domain" placeholder="">
+              </div>
+              <div class="form-group">
+                <label >Main file</label>
+                <input value="app.js" name="mainfile" type="text" class="form-control"  name="domain" placeholder="">
+              </div>
+              <div class="form-group">
+                <label >Port</label>
+                <input type="text" name="port" class="form-control"  placeholder="2020">
+              </div>
+
+          </div>
+          -->
+              <button style="float:right;" type="submit" class="btn btn-default">Submit</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{{{include 'html/partials/footer.html'}}}

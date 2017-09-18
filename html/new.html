@@ -1,0 +1,54 @@
+{{{include 'html/partials/header.html'}}}
+
+<div class="my-row" style="margin-left:20px">
+  <div class="row">
+    <form id="insert-form" action="/programs/insert" method="post">
+    <div class="col-md-4 col-sm-4 form-col ">
+      <h3>New program</h3>
+        <div class="form-group">
+          <label>Domain*</label>
+          <input type="text" class="form-control" name="domain" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Port*</label>
+          <input type="text" class="form-control" name="port" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Main file*</label>
+          <input value="run.js" type="text" class="form-control" name="file" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Migration file</label>
+          <input value="" type="text" class="form-control" name="migration" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Opret database</label>
+          <input value="" name="ensure_database" type="text" class="form-control" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Facebook App ID</label>
+          <input type="text" name="facebook_app_id" class="form-control" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Google client ID</label>
+          <input type="text" name="google_client_id" class="form-control" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Google api key</label>
+          <input type="text" name="google_api_key" class="form-control" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Twitter-consumer key</label>
+          <input type="text" name="twitter_consumer_key" class="form-control" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Twitter-consumer secret</label>
+          <input type="text" name="twitter_consumer_secret" class="form-control" placeholder="">
+        </div>
+        <button id="submit-new" style="float:right;" class="btn btn-default">Create</button>
+    </div>
+    </form>
+  </div>
+</div>
+
+{{{include 'html/partials/footer.html'}}}
