@@ -214,8 +214,11 @@ const overrideENV = program => {
   if(fs.existsSync(commands.programENV(program))){
     let file = fs.readFileSync(commands.programENV(program),'utf-8')
     const systemSettings = getSettings()
+    console.log(1);
     console.log(systemSettings)
+    console.log(2);
     console.log(systemSettings.ensure_database)
+    console.log(3);
 
     fs.writeFileSync(commands.programENV(program),fixENV(
       {
