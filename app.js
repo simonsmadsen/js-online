@@ -135,10 +135,8 @@ web.route('/delete/:id', async (input,session) => {
 
   const program = programs.find({key:input.id})
   if(!program) return {no:'program'}
-  console.log(program)
-  return program
 
-  programs.delete({domain:input.id})
+  programs.delete({key:input.id})
   try {
     console.log(await run('rm -R websites/'+program.domain) )
     console.log(await run('certbot delete --cert-name '+program.domain))
