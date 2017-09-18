@@ -150,7 +150,7 @@ web.route('/delete/:id', async (input,session) => {
   }
 
   await certbot(run,programs.select())
-  return {}
+  return web.redirect('/')
 })
 
 const removeLastSlash
