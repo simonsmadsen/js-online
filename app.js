@@ -214,6 +214,8 @@ const overrideENV = program => {
   if(fs.existsSync(commands.programENV(program))){
     let file = fs.readFileSync(commands.programENV(program),'utf-8')
     const systemSettings = getSettings()
+    console.log(systemSettings.ensure_database)
+
     fs.writeFileSync(commands.programENV(program),fixENV(
       {
         mac: 'false',
