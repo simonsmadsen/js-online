@@ -184,10 +184,7 @@ const programBykey = key =>
 const overrideENV = program => {
   if(fs.existsSync(commands.programENV(program))){
     let file = fs.readFileSync(commands.programENV(program),'utf-8')
-    console.log(file)
     const systemSettings = getSettings()
-    console.log(systemSettings)
-    console.log(program)
     fs.writeFileSync(fixENV(
       {
         port: program.port,
@@ -204,8 +201,8 @@ const overrideENV = program => {
         google_api_key: program.google_api_key,
         twitter_consumer_key: program.twitter_consumer_key,
         twitter_consumer_secret: program.twitter_consumer_secret
-      },commands.programENV(program)
-    ))
+      },file
+    ),commands.programENV(program))
   }
 }
 
