@@ -187,6 +187,7 @@ const overrideENV = program => {
     const systemSettings = getSettings()
     fs.writeFileSync(commands.programENV(program),fixENV(
       {
+        mac: 'false',
         port: program.port,
         https_privkey: `/etc/letsencrypt/live/${program.domain}/privkey.pem`,
         https_cert: `/etc/letsencrypt/live/${program.domain}/cert.pem`,
