@@ -223,6 +223,7 @@ const overrideENV = program => {
         https_fullchain: `/etc/letsencrypt/live/${program.domain}/fullchain.pem`,
         https: 'true',
         mysql_host: systemSettings.mysql_host,
+        mysql_database: systemSettings.ensure_database,
         mysql_username: systemSettings.mysql_username,
         mysql_password: systemSettings.mysql_password,
         mysql_port: systemSettings.mysql_port,
